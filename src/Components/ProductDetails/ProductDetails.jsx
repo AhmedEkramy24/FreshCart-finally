@@ -8,17 +8,18 @@ import toast from "react-hot-toast";
 
 export default function ProductDetails() {
   let { addToCart, getAllProductsFromCart } = useContext(CartContext);
-  let { addToWishList, wishList , getAllWishList} = useContext(WishListContext);
+  let { addToWishList, wishList, getAllWishList } = useContext(WishListContext);
   let { id } = useParams();
   const [product, setProduct] = useState(null);
   const [products, setProducts] = useState(null);
-  async function getProduct() {
+  const [productId, setProductId] = useState(id);
+  const [loading, setLoading] = useState(false);
+  async function getProduct(productId) {
     let { data } = await axios.get(
-      `https://ecommerce.routemisr.com/api/v1/products/${id}`
+      `https://ecommerce.routemisr.com/api/v1/products/${productId}`
     );
     setProduct(data.data);
   }
-  let navigate = useNavigate();
   var settings = {
     dots: false,
     infinite: true,
@@ -53,7 +54,7 @@ export default function ProductDetails() {
   };
 
   useEffect(() => {
-    getProduct();
+    getProduct(productId);
     getProducts();
     getAllProductsFromCart();
     getAllWishList();
@@ -68,6 +69,11 @@ export default function ProductDetails() {
 
   return (
     <>
+      {loading && (
+        <div className="flex top-0 right-0 left-0 bottom-0 bg-black bg-opacity-50 fixed justify-center items-center z-50">
+          <span className="loader"></span>
+        </div>
+      )}
       {product ? (
         <div className="container flex items-center gap-6 flex-col md:flex-row mt-14">
           <div className="md:w-1/3 p-2">
@@ -100,28 +106,28 @@ export default function ProductDetails() {
               </span>
             </div>
             <div className="flex items-center gap-4">
-            <button
-              className="block mt-4 w-full"
-              onClick={() => {
-                addToCart(product.id);
-              }}
-            >
-              Add To Cart
-            </button>
-            <span
-            className="mt-2 cursor-pointer"
-              onClick={() => {
-                addToWishList(product.id);
-                toast.success("Add successfuly to wish list");
-                getAllWishList();
-              }}
-            >
-              {wishList.some((item) => item.id === product.id) ? (
-                <i className="fa-solid fa-heart text-red-500 text-3xl"></i>
-              ) : (
-                <i className="fa-regular fa-heart text-slate-300 text-3xl"></i>
-              )}
-            </span>
+              <button
+                className="block mt-4 w-full"
+                onClick={() => {
+                  addToCart(product.id);
+                }}
+              >
+                Add To Cart
+              </button>
+              <span
+                className="mt-2 cursor-pointer"
+                onClick={() => {
+                  addToWishList(product.id);
+                  toast.success("Add successfuly to wish list");
+                  getAllWishList();
+                }}
+              >
+                {wishList.some((item) => item.id === product.id) ? (
+                  <i className="fa-solid fa-heart text-red-500 text-3xl"></i>
+                ) : (
+                  <i className="fa-regular fa-heart text-slate-300 text-3xl"></i>
+                )}
+              </span>
             </div>
           </div>
         </div>
@@ -137,7 +143,15 @@ export default function ProductDetails() {
           {products
             ?.filter((item) => item.category.name === product.category.name)
             .map((product, index) => (
-              <Link to={`/Productdetails/${product.id}`} key={index}>
+              <div
+                key={index}
+                onClick={async () => {
+                  setLoading(true);
+                  await setProductId(product.id);
+                  await getProduct(product.id);
+                  setLoading(false);
+                }}
+              >
                 <div className="p-2 hover:border border-main cursor-pointer">
                   <img
                     src={product.imageCover}
@@ -147,7 +161,7 @@ export default function ProductDetails() {
                   />
                   <h3 className="p-2 text-center">{product.title}</h3>
                 </div>
-              </Link>
+              </div>
             ))}
         </Slider>
       </div>
@@ -159,7 +173,7 @@ export default function ProductDetails() {
           {products
             ?.filter((item) => item.category.name === product.category.name)
             .map((product, index) => (
-              <Link to={`/Productdetails/${product.id}`} key={index}>
+              <div key={index}>
                 <div className="p-2 hover:border border-main cursor-pointer">
                   <img
                     src={product.imageCover}
@@ -169,7 +183,7 @@ export default function ProductDetails() {
                   />
                   <h3 className="p-2 text-center">{product.title}</h3>
                 </div>
-              </Link>
+              </div>
             ))}
         </Slider>
       </div>
@@ -181,7 +195,7 @@ export default function ProductDetails() {
           {products
             ?.filter((item) => item.category.name === product.category.name)
             .map((product, index) => (
-              <Link to={`/Productdetails/${product.id}`} key={index}>
+              <div key={index}>
                 <div className="p-2 hover:border border-main cursor-pointer">
                   <img
                     src={product.imageCover}
@@ -191,7 +205,7 @@ export default function ProductDetails() {
                   />
                   <h3 className="p-2 text-center">{product.title}</h3>
                 </div>
-              </Link>
+              </div>
             ))}
         </Slider>
       </div>
