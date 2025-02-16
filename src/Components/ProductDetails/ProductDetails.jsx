@@ -173,7 +173,15 @@ export default function ProductDetails() {
           {products
             ?.filter((item) => item.category.name === product.category.name)
             .map((product, index) => (
-              <div key={index}>
+              <div
+                key={index}
+                onClick={async () => {
+                  setLoading(true);
+                  await setProductId(product.id);
+                  await getProduct(product.id);
+                  setLoading(false);
+                }}
+              >
                 <div className="p-2 hover:border border-main cursor-pointer">
                   <img
                     src={product.imageCover}
@@ -195,7 +203,15 @@ export default function ProductDetails() {
           {products
             ?.filter((item) => item.category.name === product.category.name)
             .map((product, index) => (
-              <div key={index}>
+              <div
+                key={index}
+                onClick={async () => {
+                  setLoading(true);
+                  await setProductId(product.id);
+                  await getProduct(product.id);
+                  setLoading(false);
+                }}
+              >
                 <div className="p-2 hover:border border-main cursor-pointer">
                   <img
                     src={product.imageCover}
